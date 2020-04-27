@@ -1,0 +1,8 @@
+[package]
+name = "bogus-repo"
+version = "0.1.0"
+authors = ["Adam C. Foltzer <acfoltzer@acfoltzer.net>"]
+edition = "2018"
+repository = "https://github.com/acfoltzer/does-not-exist"
+
+[dependencies]

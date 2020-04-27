@@ -1,0 +1,89 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.2.0
+
+workflows:
+  test:
+    jobs:
+      - rustfmt
+      - audit:
+          requires:
+            - rustfmt
+      - linux:
+          context: cargo-fund
+          requires:
+            - rustfmt
+      - windows:
+          context: cargo-fund
+          requires:
+            - rustfmt
+
+jobs:
+  rustfmt:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: "Format code"
+          command: |
+            set -x
+            cargo fmt -- --check
+
+  audit:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: "Audit dependencies"
+          command: |
+            set -x
+            cargo install --debug cargo-audit
+            cargo audit
+
+  linux:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          name: "Install Rust"
+          command: |
+            set -x
+            curl https://sh.rustup.rs | sh -s -- --default-toolchain stable -y
+            echo "source $HOME/.cargo/env" >> $BASH_ENV
+      - build_and_test
+
+  windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+         name: "Install Rust"
+         command: |
+           set -x
+           curl.exe -O https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe
+           ./rustup-init.exe --default-toolchain stable -y
+           echo $PATH
+           echo $BASH_ENV
+           echo "export PATH=\"$HOME/.cargo/bin:$PATH\"" >> $BASH_ENV
+      - build_and_test
+
+commands:
+  build_and_test:
+    description: "Build and test with Cargo"
+    steps:
+      - run:
+          name: "Build"
+          command: |
+            set -x
+            cargo build --tests
+      - run:
+          name: "Test"
+          command: |
+            set -x
+            cargo test

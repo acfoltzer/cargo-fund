@@ -1,0 +1,26 @@
+[package]
+name = "cargo-fund"
+description = "Discover funding links for your project's dependencies."
+version = "0.1.0"
+authors = ["Adam C. Foltzer <acfoltzer@acfoltzer.net>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/acfoltzer/cargo-fund"
+readme = "README.md"
+categories = ["development-tools::cargo-plugins"]
+keywords = ["funding", "sponsorship"]
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0.28"
+cargo_metadata = "0.9.1"
+envy = "0.4.1"
+http = "0.2.1"
+lazy_static = "1.4.0"
+parking_lot = "0.10.2"
+reqwest = { version = "0.10.4", features = ["json"] }
+serde = { version = "1.0.51", features = ["derive"] }
+serde_json = "1.0.51"
+structopt = "0.3.14"
+tokio = { version = "0.2.21", features = ["rt-threaded", "macros"] }
+tracing = "0.1.14"
+tracing-subscriber = "0.2.5"

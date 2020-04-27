@@ -1,0 +1,10 @@
+[package]
+name = "client-package"
+version = "0.1.0"
+authors = ["Adam C. Foltzer <acfoltzer@acfoltzer.net>"]
+edition = "2018"
+
+[dependencies]
+bogus-owner = { path = "../bogus-owner" }
+bogus-repo = { path = "../bogus-repo" }
+funding-test = { path = "../funding-test" }
