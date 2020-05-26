@@ -7,7 +7,7 @@ Discover funding links for your project's dependencies.
 
 [crates-badge]: https://img.shields.io/crates/v/cargo-fund.svg
 [crates-url]: https://crates.io/crates/cargo-fund
-[circleci-badge]: https://img.shields.io/circleci/build/github/acfoltzer/cargo-fund
+[circleci-badge]: https://img.shields.io/circleci/build/github/acfoltzer/cargo-fund/develop
 [circleci-url]: https://circleci.com/gh/acfoltzer/cargo-fund
 
 ## Installation
