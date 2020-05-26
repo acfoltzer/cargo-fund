@@ -3,7 +3,7 @@
 //! For example, when run on this project, `cargo fund` produces:
 //!
 //! ```text
-//! % GITHUB_API_TOKEN=... cargo fund
+//! % CARGO_FUND_GITHUB_API_TOKEN=... cargo fund
 //! $HOME/cargo-fund (found funding links for 16 out of 138 dependencies)
 //! ├─┬─ https://www.buymeacoffee.com/dannyguo
 //! │ ├─ https://www.paypal.me/DannyGuo
@@ -33,7 +33,7 @@
 //!
 //! `cargo fund` retrieves funding links for any dependencies with a Github URL in its
 //! `[package.repository]` field. To retrieve this information, you must provide a valid Github API
-//! token in the `GITHUB_API_TOKEN` environment variable or the `--github-api-token` command-line
+//! token in the `CARGO_FUND_GITHUB_API_TOKEN` environment variable or the `--github-api-token` command-line
 //! argument. To generate this token, go to <https://github.com/settings/tokens> and create a token
 //! with the `public_repo` and `user` scopes.
 use crate::args::Opts;
@@ -315,7 +315,7 @@ async fn main() -> Result<(), Error> {
         token
     } else {
         bail!(
-            "Github API token must be provided through the GITHUB_API_TOKEN environment \
+            "Github API token must be provided through the CARGO_FUND_GITHUB_API_TOKEN environment \
              variable or the --github-api-token flag."
         );
     };
