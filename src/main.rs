@@ -58,10 +58,22 @@ struct Globals {
     client: reqwest::Client,
 }
 
-fn initialize_globals(github_api_token: &str) -> Result<(), Error> {
+fn initialize_globals(env: &args::Env, args: &args::Args) -> Result<(), Error> {
     tracing_subscriber::fmt::init();
+    let github_api_token = if let Some(token) = args
+        .github_api_token
+        .as_ref()
+        .or(env.github_api_token.as_ref())
+    {
+        token
+    } else {
+        bail!(
+            "Github API token must be provided through the CARGO_FUND_GITHUB_API_TOKEN environment \
+             variable or the --github-api-token flag."
+        );
+    };
     let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(5))
+        .timeout(std::time::Duration::from_secs(60))
         .user_agent(concat!(
             env!("CARGO_PKG_NAME"),
             "/",
@@ -307,27 +319,12 @@ fn print_results(
 async fn main() -> Result<(), Error> {
     let env = envy::from_env::<args::Env>()?;
     let Opts::Fund(args) = Opts::from_args();
-    let github_api_token = if let Some(token) = args
-        .github_api_token
-        .as_ref()
-        .or(env.github_api_token.as_ref())
-    {
-        token
-    } else {
-        bail!(
-            "Github API token must be provided through the CARGO_FUND_GITHUB_API_TOKEN environment \
-             variable or the --github-api-token flag."
-        );
-    };
-    initialize_globals(github_api_token)?;
-
+    initialize_globals(&env, &args)?;
     let metadata = metadata::get(&args)?;
-
     let source_map = collect_sources(&metadata)?;
     let resolved = resolve_links(&source_map).await?;
     let num_found = resolved.len();
     let inverted = invert_mapping(resolved);
     print_results(&metadata, &inverted, num_found);
-
     Ok(())
 }
