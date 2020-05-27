@@ -28,8 +28,8 @@ fn client_package_output_expected() {
         .current_dir(client_package)
         .arg("fund")
         .env(
-            "GITHUB_API_TOKEN",
-            std::env::var_os("VALID_GITHUB_API_TOKEN").unwrap(),
+            "CARGO_FUND_GITHUB_API_TOKEN",
+            std::env::var_os("VALID_CARGO_FUND_GITHUB_API_TOKEN").unwrap(),
         )
         .output()
         .expect("cargo-fund runs");
@@ -43,14 +43,14 @@ fn client_package_output_expected() {
 fn missing_token() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let expected =
-        "Error: Github API token must be provided through the GITHUB_API_TOKEN environment \
-         variable or the --github-api-token flag.\n";
+        "Error: Github API token must be provided through the CARGO_FUND_GITHUB_API_TOKEN \
+         environment variable or the --github-api-token flag.\n";
     let exe = Path::new(env!("CARGO_BIN_EXE_cargo-fund"));
     let output = Command::new(exe)
         .current_dir(root.join("tests").join("client-package"))
         .arg("fund")
         // not necessary for CI, but makes local testing easier
-        .env_remove("GITHUB_API_TOKEN")
+        .env_remove("CARGO_FUND_GITHUB_API_TOKEN")
         .output()
         .expect("cargo-fund runs");
     assert!(!output.status.success());
@@ -65,14 +65,14 @@ fn invalid_token() {
         "Error: Invalid Github API token. Create a token with the `public_repo` and `user` scopes \
          at https://github.com/settings/tokens.\n";
     let exe = Path::new(env!("CARGO_BIN_EXE_cargo-fund"));
-    let mut token = std::env::var("VALID_GITHUB_API_TOKEN").unwrap();
+    let mut token = std::env::var("VALID_CARGO_FUND_GITHUB_API_TOKEN").unwrap();
     // remove a character to invalidate the token
     token.pop();
 
     let output = Command::new(exe)
         .current_dir(root.join("tests").join("client-package"))
         .arg("fund")
-        .env("GITHUB_API_TOKEN", token)
+        .env("CARGO_FUND_GITHUB_API_TOKEN", token)
         .output()
         .expect("cargo-fund runs");
     assert!(!output.status.success());
@@ -90,8 +90,8 @@ fn insufficient_scopes() {
         .current_dir(root.join("tests").join("client-package"))
         .arg("fund")
         .env(
-            "GITHUB_API_TOKEN",
-            std::env::var_os("INSUFFICIENT_SCOPES_GITHUB_API_TOKEN").unwrap(),
+            "CARGO_FUND_GITHUB_API_TOKEN",
+            std::env::var_os("INSUFFICIENT_SCOPES_CARGO_FUND_GITHUB_API_TOKEN").unwrap(),
         )
         .output()
         .expect("cargo-fund runs");

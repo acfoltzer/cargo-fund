@@ -7,6 +7,7 @@ use structopt::StructOpt;
 
 #[derive(Deserialize, Debug)]
 pub struct Env {
+    #[serde(rename = "cargo_fund_github_api_token")]
     pub github_api_token: Option<String>,
 }
 
@@ -26,7 +27,7 @@ pub enum Opts {
 #[derive(StructOpt)]
 pub struct Args {
     /// Github API token, which must have the scope `public_repo`. This option overrides the token
-    /// provided in the `GITHUB_API_TOKEN` environment variable.
+    /// provided in the `CARGO_FUND_GITHUB_API_TOKEN` environment variable.
     #[structopt(long = "github-api-token", value_name = "TOKEN")]
     pub github_api_token: Option<String>,
     #[structopt(long = "manifest-path", value_name = "PATH", parse(from_os_str))]

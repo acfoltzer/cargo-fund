@@ -22,16 +22,16 @@ $ cargo install cargo-fund
 
 `cargo-fund` retrieves funding links for any dependencies with a Github URL in its
 `[package.repository]` field. To retrieve this information, you must provide a valid Github API
-token in the `GITHUB_API_TOKEN` environment variable or the `--github-api-token` command-line
-argument. To generate this token, go to <https://github.com/settings/tokens> and create a token
-with the `public_repo` and `user` scopes.
+token in the `CARGO_FUND_GITHUB_API_TOKEN` environment variable or the `--github-api-token`
+command-line argument. To generate this token, go to <https://github.com/settings/tokens> and create
+a token with the `public_repo` and `user` scopes.
 
 ## Usage
 
 Run `cargo fund` in your workspace to print funding links. For example:
 
 ```text
-$ GITHUB_API_TOKEN=... cargo fund
+$ CARGO_FUND_GITHUB_API_TOKEN=... cargo fund
 /path/to/cargo-fund (found funding links for 16 out of 138 dependencies)
 ├─┬─ https://www.buymeacoffee.com/dannyguo
 │ ├─ https://www.paypal.me/DannyGuo
