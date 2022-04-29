@@ -59,7 +59,10 @@ struct Globals {
 }
 
 fn initialize_globals(env: &args::Env, args: &args::Args) -> Result<(), Error> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_writer(std::io::stderr)
+        .init();
     let github_api_token = if let Some(token) = args
         .github_api_token
         .as_ref()
@@ -157,7 +160,12 @@ impl TryFrom<(&str, &str)> for Link {
 
     fn try_from((platform, url): (&str, &str)) -> Result<Self, Self::Error> {
         let platform = platform.try_into()?;
-        let mut uri: http::Uri = url.parse()?;
+        let mut uri: http::Uri = if url.starts_with("http") {
+            url.parse()?
+        } else {
+            // Try https if there's no scheme
+            format!("https://{}", url).parse()?
+        };
         if let Platform::Github = platform {
             // fix up the URI for github sponsors 🤷
             let mut parts = uri.into_parts();
@@ -250,7 +258,11 @@ fn print_results(
         num_found,
         metadata.packages.len() - metadata.workspace_members.len()
     );
-    let last_mapping_ix = inverted.len() - 1;
+    let last_mapping_ix = if let Some(ix) = inverted.len().checked_sub(1) {
+        ix
+    } else {
+        return;
+    };
     for (mapping_ix, (links, pkgs)) in inverted.into_iter().enumerate() {
         let last_link_ix = links.len() - 1;
         for (link_ix, link) in links.into_iter().enumerate() {

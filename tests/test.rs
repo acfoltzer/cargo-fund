@@ -14,7 +14,8 @@ fn client_package_output_expected() {
     let client_package = root.join("tests").join("client-package");
     let expected = format!(
         "{} (found funding links for 1 out of 3 dependencies)
-──┬─ https://www.acfoltzer.net/
+──┬─ https://acfoltzer.net/bare_relative_link
+  ├─ https://www.acfoltzer.net/
   ├─ https://www.acfoltzer.net/another_url
   ├─ https://issuehunt.io/r/acfoltzer
   ├─ https://ko-fi.com/acfoltzer
@@ -33,6 +34,7 @@ fn client_package_output_expected() {
         )
         .output()
         .expect("cargo-fund runs");
+
     assert!(output.status.success());
     let stdout = std::str::from_utf8(&output.stdout).expect("stdout is valid UTF-8");
     assert_eq!(stdout, expected, "stdout matches");

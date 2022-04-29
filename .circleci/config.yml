@@ -22,7 +22,7 @@ workflows:
 jobs:
   rustfmt:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -33,7 +33,7 @@ jobs:
 
   audit:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -44,16 +44,10 @@ jobs:
             cargo audit
 
   linux:
-    machine:
-      image: ubuntu-1604:201903-01
+    docker:
+      - image: cimg/rust:1.60
     steps:
       - checkout
-      - run:
-          name: "Install Rust"
-          command: |
-            set -x
-            curl https://sh.rustup.rs | sh -s -- --default-toolchain stable -y
-            echo "source $HOME/.cargo/env" >> $BASH_ENV
       - build_and_test
 
   windows:
@@ -67,7 +61,7 @@ jobs:
          command: |
            set -x
            curl.exe -O https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe
-           ./rustup-init.exe --default-toolchain stable -y
+           ./rustup-init.exe --default-toolchain 1.60.0 -y
            echo $PATH
            echo $BASH_ENV
            echo "export PATH=\"$HOME/.cargo/bin:$PATH\"" >> $BASH_ENV
