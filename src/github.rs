@@ -5,7 +5,7 @@ use http::{StatusCode, Uri};
 use std::collections::{HashMap, HashSet};
 use std::convert::TryFrom;
 use std::fmt::Write;
-use tracing::info;
+use tracing::{debug, info, trace, warn};
 
 const GITHUB_TOKEN_HELP: &str = "Invalid Github API token. \
 Create a token with the `public_repo` and `user` scopes at https://github.com/settings/tokens.";
@@ -129,7 +129,11 @@ pub(crate) async fn resolve_github_links(
         .bearer_auth(&globals().github_api_token)
         .json(&query);
 
+    trace!("sending Github GraphQL query");
+
     let resp = req.send().await?;
+
+    trace!("received Github GraphQL query response");
 
     match resp.status() {
         StatusCode::OK => (),
@@ -137,7 +141,11 @@ pub(crate) async fn resolve_github_links(
         status => bail!("Github API returned unexpected status: {}", status),
     }
 
+    trace!("deserializing Github response JSON");
+
     let res: serde_json::Value = resp.json().await?;
+
+    trace!("deserialized Github response JSON");
 
     if let serde_json::Value::Array(errors) = &res["errors"] {
         for error in errors {
@@ -163,17 +171,30 @@ pub(crate) async fn resolve_github_links(
     }
 
     for (alias, (source, pkgs)) in query_map {
+        trace!("processing {:?}, {:?}", alias, source);
         match alias {
             Alias::Repo(alias) => {
                 if let serde_json::Value::Array(links) = &res["data"][alias]["fundingLinks"] {
                     for link in links {
+                        trace!("processing {:?}", link);
                         let platform = link["platform"]
                             .as_str()
                             .ok_or_else(|| anyhow!("Malformed Github API response"))?;
                         let uri = link["url"]
                             .as_str()
                             .ok_or_else(|| anyhow!("Malformed Github API response"))?;
-                        let link = Link::try_from((platform, uri))?;
+                        let link = match Link::try_from((platform, uri)) {
+                            Ok(link) => link,
+                            Err(e) => {
+                                warn!(
+                                    platform = %platform,
+                                    uri = %uri,
+                                    "could not parse Github funding links; skipping: {}",
+                                    e
+                                );
+                                continue;
+                            }
+                        };
                         for pkg in pkgs.iter() {
                             resolved
                                 .entry(pkg.clone())
@@ -190,20 +211,33 @@ pub(crate) async fn resolve_github_links(
                 if let serde_json::Value::Null = res["data"][alias]["sponsorsListing"] {
                     continue;
                 } else {
+                    let uri: http::Uri =
+                        match format!("https://github.com/sponsors/{}", source.owner()).parse() {
+                            Ok(link) => link,
+                            Err(e) => {
+                                warn!(
+                                    owner = %source.owner(),
+                                    "could not create valid owner sponsor link; skipping: {}",
+                                    e
+                                );
+                                continue;
+                            }
+                        };
                     for pkg in pkgs {
                         resolved
                             .entry(pkg.clone())
                             .or_insert_with(HashSet::new)
                             .insert(Link {
                                 platform: Platform::Github,
-                                uri: format!("https://github.com/sponsors/{}", source.owner())
-                                    .parse()?,
+                                uri: uri.clone(),
                             });
                     }
                 }
             }
         }
     }
+
+    debug!("finished resolving Github links");
 
     Ok(())
 }
