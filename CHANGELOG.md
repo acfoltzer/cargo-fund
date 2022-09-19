@@ -1,6 +1,12 @@
+# 0.2.2
+
+## Fixed
+
+- Updated some dependencies to clear Dependabot warnings. None of the warnings were applicable to how `cargo-fund` used those dependencies.
+
 # 0.2.1
 
-Fixed
+## Fixed
 
 - ([#8](https://github.com/acfoltzer/cargo-fund/issues/8)) `cargo-fund` will now try to prepend an `https://` scheme to bare relative URLs, and failure to parse a URL will lead to that entry being ignored rather than crashing.
 
