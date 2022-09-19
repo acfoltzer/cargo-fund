@@ -60,7 +60,7 @@ checksum = "ec8a7b6a70fde80372154c65702f00a0f56f3e1c36abbc6c440484be248856db"
 
 [[package]]
 name = "cargo-fund"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "anyhow",
  "cargo_metadata",
