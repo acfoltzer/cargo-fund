@@ -39,11 +39,11 @@
 use crate::args::Opts;
 use anyhow::{anyhow, bail, Error};
 use cargo_metadata::{Metadata, Package, PackageId};
+use clap::Parser;
 use lazy_static::lazy_static;
 use parking_lot::{MappedRwLockReadGuard, RwLock, RwLockReadGuard};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::convert::{TryFrom, TryInto};
-use structopt::StructOpt;
 
 mod args;
 mod github;
@@ -330,7 +330,7 @@ fn print_results(
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let env = envy::from_env::<args::Env>()?;
-    let Opts::Fund(args) = Opts::from_args();
+    let Opts::Fund(args) = Opts::parse();
     initialize_globals(&env, &args)?;
     let metadata = metadata::get(&args)?;
     let source_map = collect_sources(&metadata)?;
