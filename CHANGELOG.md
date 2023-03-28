@@ -1,3 +1,13 @@
+# 0.2.3
+
+## Changed
+
+- Updated to `clap` 4.
+
+## Fixed
+
+- Updated some dependencies to clear Dependabot warnings. None of the warnings were applicable to how `cargo-fund` used those dependencies directly.
+
 # 0.2.2
 
 ## Fixed
