@@ -22,7 +22,7 @@ workflows:
 jobs:
   rustfmt:
     docker:
-      - image: cimg/rust:1.66
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run:
@@ -33,7 +33,7 @@ jobs:
 
   audit:
     docker:
-      - image: cimg/rust:1.66
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run:
@@ -45,7 +45,7 @@ jobs:
 
   linux:
     docker:
-      - image: cimg/rust:1.66
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - build_and_test
@@ -61,7 +61,7 @@ jobs:
          command: |
            set -x
            curl.exe -O https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe
-           ./rustup-init.exe --default-toolchain 1.66.1 -y
+           ./rustup-init.exe --default-toolchain 1.76.0 -y
            echo $PATH
            echo $BASH_ENV
            echo "export PATH=\"$HOME/.cargo/bin:$PATH\"" >> $BASH_ENV
